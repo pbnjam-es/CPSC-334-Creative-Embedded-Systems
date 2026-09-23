@@ -1,0 +1,13 @@
+Author: Jam
+Date: 9/23
+
+* Systemd and config file uploading to git done in last Lab
+- Created folder to receive files from Pi on Mac, turned on Remote Login
+- Successfully transfered ip.md to Mac using scp from Pi
+
+- Wrote bash file in scp_backup.sh
+- Edited crontab to run every minute
+
+- Debugged bash file, then debugged crontab file
+
+Now works! 

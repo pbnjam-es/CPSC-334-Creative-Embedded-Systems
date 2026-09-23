@@ -1,0 +1,25 @@
+Partners: Filippo, Jam
+Date: 9/10
+
+*skipped step 1, as instructed
+- Created raspberrypi directory on both GitHub repos
+- Encountered an issue when ssh-ing where one of us could not ssh into the Pi, but we realized it was due to the port being taken by the other!
+- Set up ssh key on the pi and added it to GitHub settings
+- Performed a test commit, which uncovered we needed to do git confoig --hlobal user.email and user.name to set up our GitHub credentials on the Pi properly and push
+- Make a sample README.md as a test
+- We began with a simple startup.sh script that prints the IP address of the pi
+- We researched how to make the startup.sh script run on startup (upon network access) and created the service file
+- We enabled the service file
+- Before testing it, we quickly added the copying of the config files into the directory on our Pi that is linked to my GitHub repo and made it push everything upon startup so we have a clean, automated workflow every time we power on the Pi (so we can at least always go back to the previous state(
+- We powered off the Pi properly via the command line in order to then be able to test our startup script's function
+- We powered the Pi back on and realized that our paths were wrong (we weren't prefixing the routes with /home/stu3340, so the startup.sh wasn't executing properly
+- then fixed the path in startup.sh to /home/stu3340/cpsc3340_ces/raspberrypi/config_files (proper route!)
+- Added the missing write of the IP to ip.md as well
+- Switched /boot/config.txt (a stub on this OS) to /boot/firmware/config.txt.
+- modifieid git add . to git add raspberrypi/config_files and only commit/push when something changed (much better for continuity reasonbs!)
+- Tested with systemctl --user restart myscript.service, then did full reboot. worked! ip.md and configs now push to GitHub on boot, which is fatastic.
+- Changing to Jam's Pi now (we did all of this on Filippo's)
+
+
+UPDATE 9/23:
+- Replicated Lab 1 on Jam's Pi, now successfully functioning
