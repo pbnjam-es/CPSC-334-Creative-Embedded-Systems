@@ -1,7 +1,7 @@
 #!/bin/bash
 set -u
 
-REPO_DIR="/home/stu3340/cpsc3340_ces"
+REPO_DIR="/home/stu3340/CPSC-334-Creative-Embedded-Systems"
 DEST="$REPO_DIR/raspberrypi/config_files"
 mkdir -p "$DEST"
 
