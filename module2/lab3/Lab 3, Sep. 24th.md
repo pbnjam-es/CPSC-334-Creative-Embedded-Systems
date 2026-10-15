@@ -1,0 +1,3 @@
+- Starting with the rpi-lgpio package, and reading input
+- Wrote a simple python script (breadboard.py)
+- Lots of struggles with the initial setup but eventually figured it out
