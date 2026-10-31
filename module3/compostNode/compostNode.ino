@@ -113,7 +113,7 @@ void loop() {
     if (push > maxPush) maxPush = push;
     if (reachedAt == 0 && depth >= 0.9) reachedAt = millis();
     if (millis() - openedAt > IGNORE_AFTER_OPEN && thud > maxThud) maxThud = thud;
-    for (int i = 0; i < 3; i++) maxLight[i] = max(maxLight[i], analogRead(LIGHT[i]));
+    for (int i = 0; i < 3; i++) maxLight[i] = max(maxLight[i], (int)analogRead(LIGHT[i]));
   }
 
   // ---- lid closes: send the deposit ----
