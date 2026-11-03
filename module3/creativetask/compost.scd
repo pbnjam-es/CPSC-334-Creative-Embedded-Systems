@@ -105,8 +105,7 @@ s.waitForBoot {
 
         fork {
             var h, syn;
-            burial.wait;                                               // the unseen gap
-
+            burial.wait;                                             
             if(w < 0.05) {
                 // nothing / almost nothing: a breath of air, no tone
                 Synth(\breath, [\out, ~revBus, \freq, exprand(600, 2500),
@@ -163,10 +162,7 @@ s.waitForBoot {
 };
 )
 
-
-// ================= test lines (Shift+Enter one at a time) =================
-// Wrapped in a comment so they DON'T run when the Pi starts this file on boot.
-// In the Mac IDE you can still put the cursor on a line and press Shift+Enter.
+// testing code
 /*
 
 // args: lid ms, thud, depth, push, rise ms, fill

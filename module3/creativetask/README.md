@@ -9,6 +9,8 @@ Arduino scripts used in the process of testing. This project involved code writt
 Running this project requires the ESP32 and the Pi to be on the same internet connection, with the Pi requiring the pw-jack and sclang
 libraries. 
 
+The Pi is programmed through systemctl to start both the Supercollider service on boot as well as the compost listener (pedal_listener.py). To start the ESP32 and begin operation/sending messages to the Pi, the switch on the exposed Lipo Rider on the back of the enclosure must be turned on (the ESP32 code also starts on boot).
+
 The following materials/components were involved in the building of this project:
 
 Count	Name
