@@ -1,0 +1,12 @@
+[Unit]
+Description=Push the Pi's IP address and config files to GitHub
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=stu3340
+ExecStart=/home/stu3340/push_ip.sh
+
+[Install]
+WantedBy=multi-user.target
