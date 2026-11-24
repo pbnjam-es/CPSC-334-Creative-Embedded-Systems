@@ -2,16 +2,15 @@
 #include <ESP32Servo.h>
 #include <LiquidCrystal.h>
 
-// ---------- lanes ----------
 const int STEPS_PER_REV = 2048;
 const int STEPPER_RPM = 12;
 const int NUM_LANES = 3;
 const int LANE_PINS[NUM_LANES][4] = {
-  {4, 5, 6, 7},       // lane A
-  {15, 16, 17, 18},   // lane B
-  {9, 10, 11, 12}     // lane C
+  {4, 5, 6, 7},    
+  {15, 16, 17, 18}, 
+  {9, 10, 11, 12}   
 };
-Stepper steppers[NUM_LANES] = {   // 28BYJ-48 order: IN1, IN3, IN2, IN4
+Stepper steppers[NUM_LANES] = { 
   Stepper(STEPS_PER_REV, 4, 6, 5, 7),
   Stepper(STEPS_PER_REV, 15, 17, 16, 18),
   Stepper(STEPS_PER_REV, 9, 11, 10, 12)
@@ -20,34 +19,29 @@ const char* LANE_NAMES[NUM_LANES] = {"Doom", "Love", "Work"};
 const int FULL_STOCK = 5;
 int stock[NUM_LANES] = {FULL_STOCK, FULL_STOCK, FULL_STOCK};
 
-// ---------- vend button ----------
-const int VEND_PIN = 38;                 // one leg to 38, other leg to GND
+const int VEND_PIN = 38;               
 const unsigned long DEBOUNCE_MS = 30;
 bool vendWasPressed = false;
 
-// ---------- joystick ----------
 const int JOY_X_PIN = 1;
-const int JOY_SW_PIN = 41;               // pressing the stick = Surprise me
+const int JOY_SW_PIN = 41;           
 const int JOY_LOW = 1000, JOY_HIGH = 3000;
 bool joyWasPressed = false;
 unsigned long lastMove = 0;
 int selected = 0;
 
-// ---------- servo door ----------
 const int SERVO_PIN = 8;
-int FLAP_CLOSED = 108;                     // tune with serial (C / O), then copy the values here
+int FLAP_CLOSED = 108;                  
 int FLAP_OPEN = 12;
-const int DOOR_WAIT_MS = 1200;           // time for the cookie to slide down to the door
-const int FLAP_HOLD_MS = 4000;           // how long the door stays open
-const int DOOR_MOVE_MS = 600;            // how long opening/closing takes (smooth)
+const int DOOR_WAIT_MS = 1200;         
+const int FLAP_HOLD_MS = 4000;        
+const int DOOR_MOVE_MS = 600;         
 Servo servo;
 int servoPos = 0;
 
-// ---------- 16x2 display (RS, E, D4, D5, D6, D7) ----------
 LiquidCrystal lcd(13, 14, 21, 47, 42, 2);
 
-// ---------- servo helpers ----------
-void moveServo(int target, int ms) {     // smooth sweep instead of a snap
+void moveServo(int target, int ms) {  
   target = constrain(target, 0, 180);
   int start = servoPos;
   int steps = abs(target - start);
@@ -59,14 +53,13 @@ void moveServo(int target, int ms) {     // smooth sweep instead of a snap
   servoPos = target;
 }
 
-void setServoAngle(int a) {              // instant jump, for calibration
+void setServoAngle(int a) {         
   a = constrain(a, 0, 180);
   servo.write(a);
   servoPos = a;
   Serial.printf("Servo angle: %d\n", a);
 }
 
-// ---------- display ----------
 void showMenu() {
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -82,7 +75,6 @@ void showMessage(const char* line1, const char* line2) {
   lcd.setCursor(0, 1); lcd.print(line2);
 }
 
-// ---------- vending ----------
 void releaseCoils(int lane) {
   for (int i = 0; i < 4; i++) digitalWrite(LANE_PINS[lane][i], LOW);
 }
@@ -98,11 +90,11 @@ void vend(int lane) {
   showMessage("Consulting the", "cookies...");
   Serial.printf("Vending %s\n", LANE_NAMES[lane]);
 
-  steppers[lane].step(STEPS_PER_REV);   // one revolution = one cookie
+  steppers[lane].step(STEPS_PER_REV);  
   releaseCoils(lane);
   stock[lane]--;
 
-  delay(DOOR_WAIT_MS);                  // cookie slides down to the door
+  delay(DOOR_WAIT_MS);             
   showMessage("Take your", "fortune!");
   moveServo(FLAP_OPEN, DOOR_MOVE_MS);
   delay(FLAP_HOLD_MS);
@@ -142,7 +134,6 @@ void surpriseMe() {
   vend(choice);
 }
 
-// ---------- setup / loop ----------
 void setup() {
   Serial.begin(115200);
   delay(1000);
@@ -175,14 +166,14 @@ void setup() {
 }
 
 void loop() {
-  // joystick left/right: change lane
+  // joystick left/right to change lane
   int x = analogRead(JOY_X_PIN);
   if (millis() - lastMove > 300) {
     if (x < JOY_LOW)  { selected = (selected + NUM_LANES - 1) % NUM_LANES; lastMove = millis(); showMenu(); }
     if (x > JOY_HIGH) { selected = (selected + 1) % NUM_LANES;             lastMove = millis(); showMenu(); }
   }
 
-  // vend button: vend the selected lane
+  // vend button vends the selected lane
   bool vPressed = (digitalRead(VEND_PIN) == LOW);
   if (vPressed && !vendWasPressed) {
     delay(DEBOUNCE_MS);
@@ -190,7 +181,7 @@ void loop() {
   }
   vendWasPressed = vPressed;
 
-  // joystick press: surprise me
+  // joystick press for "surprise me" functionality
   bool joyPressed = (digitalRead(JOY_SW_PIN) == LOW);
   if (joyPressed && !joyWasPressed) {
     delay(DEBOUNCE_MS);
@@ -198,7 +189,7 @@ void loop() {
   }
   joyWasPressed = joyPressed;
 
-  // serial commands
+  // commands for real-time control
   if (Serial.available()) {
     char c = Serial.read();
     // vending
@@ -210,10 +201,10 @@ void loop() {
       showMenu();
       Serial.println("Restocked");
     }
-    // door
+    
     if (c == 'o') { moveServo(FLAP_OPEN, DOOR_MOVE_MS);   Serial.printf("Door open (%d)\n", FLAP_OPEN); }
     if (c == 'c') { moveServo(FLAP_CLOSED, DOOR_MOVE_MS); Serial.printf("Door closed (%d)\n", FLAP_CLOSED); }
-    // calibration
+
     if (c == ']') setServoAngle(servoPos + 1);
     if (c == '[') setServoAngle(servoPos - 1);
     if (c == '}') setServoAngle(servoPos + 5);
