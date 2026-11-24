@@ -14,7 +14,7 @@ down for three seconds (for the selected lane) and six seconds (for all lanes).
 #include <ESP32Servo.h>
 #include <LiquidCrystal.h>
 
-This project requires the Stepper, ESP32Servo and LiquidCrystal (for the OLED display) libraries for the Pi. 
+This project requires the Stepper, ESP32Servo and LiquidCrystal (for the LCD display) libraries for the Pi. 
 
 The following materials/components were involved in the building of this project:
 
@@ -24,6 +24,10 @@ Count	Name
 3   28BYJ-48 5V Stepper Motors
 3   ULN2003 Driver Boards
 1   SG90 Servo
+1   Switch
+1   Button
+1   Joystick
+1   16-pin LCD display
 5   Black foam board
 2   MDF wooden sheets
 1	Breadboard
