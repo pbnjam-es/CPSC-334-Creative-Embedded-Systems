@@ -16,6 +16,17 @@ down for three seconds (for the selected lane) and six seconds (for all lanes).
 
 This project requires the Stepper, ESP32Servo and LiquidCrystal (for the LCD display) libraries for the Pi. 
 
+To run/implement this code, connect the ESP32 to the Pi and run the following commands:
+```
+arduino-cli compile --fqbn esp32:esp32:esp32s3 fortune_machine
+arduino-cli upload -p /dev/ttyUSB0 --fqbn esp32:esp32:esp32s3 fortune_machine
+
+To control the machine through Serial, use
+```
+arduino-cli monitor -p /dev/ttyUSB0 -c baudrate=115200
+```
+1/2/3 vends respective lanes, v vends current lane, s for surprise me and r to restock. Other Serial commands to control the exact position of the Servo at 1/5 degree increments exist as well.
+
 The following materials/components were involved in the building of this project:
 
 Count	Name

@@ -2,9 +2,12 @@
 #include <ESP32Servo.h>
 #include <LiquidCrystal.h>
 
+// Constants for vending
 const int STEPS_PER_REV = 2048;
 const int STEPPER_RPM = 12;
 const int NUM_LANES = 3;
+
+// Stepper motor ports
 const int LANE_PINS[NUM_LANES][4] = {
   {4, 5, 6, 7},    
   {15, 16, 17, 18}, 
@@ -23,6 +26,7 @@ const int VEND_PIN = 38;
 const unsigned long DEBOUNCE_MS = 30;
 bool vendWasPressed = false;
 
+// Ports/constants for joystick
 const int JOY_X_PIN = 1;
 const int JOY_SW_PIN = 41;           
 const int JOY_LOW = 1000, JOY_HIGH = 3000;
@@ -30,6 +34,7 @@ bool joyWasPressed = false;
 unsigned long lastMove = 0;
 int selected = 0;
 
+// Servo ports
 const int SERVO_PIN = 8;
 int FLAP_CLOSED = 108;                  
 int FLAP_OPEN = 12;
@@ -39,8 +44,10 @@ const int DOOR_MOVE_MS = 600;
 Servo servo;
 int servoPos = 0;
 
+// LCD display ports
 LiquidCrystal lcd(13, 14, 21, 47, 42, 2);
 
+// ------- Helper functions ----------------
 void moveServo(int target, int ms) {  
   target = constrain(target, 0, 180);
   int start = servoPos;
@@ -80,6 +87,7 @@ void releaseCoils(int lane) {
 }
 
 void vend(int lane) {
+  // Sold out
   if (stock[lane] <= 0) {
     showMessage(LANE_NAMES[lane], "is SOLD OUT");
     Serial.printf("%s sold out\n", LANE_NAMES[lane]);
@@ -90,12 +98,16 @@ void vend(int lane) {
   showMessage("Consulting the", "cookies...");
   Serial.printf("Vending %s\n", LANE_NAMES[lane]);
 
+  // Run motor/move spiral
   steppers[lane].step(STEPS_PER_REV);  
+  // Release motor coils to stop drawing power
   releaseCoils(lane);
   stock[lane]--;
 
   delay(DOOR_WAIT_MS);             
   showMessage("Take your", "fortune!");
+
+  // Open door
   moveServo(FLAP_OPEN, DOOR_MOVE_MS);
   delay(FLAP_HOLD_MS);
   showMessage("Thank you!", "");
@@ -105,6 +117,7 @@ void vend(int lane) {
 }
 
 void surpriseMe() {
+  // Random selection of lane
   int available[NUM_LANES], n = 0;
   for (int l = 0; l < NUM_LANES; l++) if (stock[l] > 0) available[n++] = l;
   if (n == 0) {
@@ -139,6 +152,7 @@ void setup() {
   delay(1000);
   randomSeed(esp_random());
 
+  // Set up stepper motors + joystick/button pins
   for (int l = 0; l < NUM_LANES; l++) {
     steppers[l].setSpeed(STEPPER_RPM);
     for (int i = 0; i < 4; i++) pinMode(LANE_PINS[l][i], OUTPUT);
@@ -147,17 +161,20 @@ void setup() {
   pinMode(VEND_PIN, INPUT_PULLUP);
   pinMode(JOY_SW_PIN, INPUT_PULLUP);
 
+  // Set up Servo
   ESP32PWM::allocateTimer(0);
   servo.setPeriodHertz(50);
   servo.attach(SERVO_PIN, 500, 2400);
   servo.write(FLAP_CLOSED);
   servoPos = FLAP_CLOSED;
 
+  // Set up LCD display and show menu
   lcd.begin(16, 2);
   showMessage("FORTUNE COOKIES", "warming up...");
   delay(1000);
   showMenu();
 
+  // Serial output
   Serial.println("Ready.");
   Serial.println("Vend:  1/2/3 = vend lane, v = vend selected, s = surprise, r = restock");
   Serial.println("Door:  o = open, c = close");
@@ -202,6 +219,7 @@ void loop() {
       Serial.println("Restocked");
     }
     
+    // servo calibration
     if (c == 'o') { moveServo(FLAP_OPEN, DOOR_MOVE_MS);   Serial.printf("Door open (%d)\n", FLAP_OPEN); }
     if (c == 'c') { moveServo(FLAP_CLOSED, DOOR_MOVE_MS); Serial.printf("Door closed (%d)\n", FLAP_CLOSED); }
 
